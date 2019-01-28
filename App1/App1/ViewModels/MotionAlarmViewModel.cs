@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Text;
 using System.Threading;
 using System.Windows.Input;
 using App1.Models;
@@ -11,29 +9,28 @@ using Xamarin.Forms;
 
 namespace App1.ViewModels
 {
-    public class MotionAlarmViewModel: INotifyPropertyChanged
+    public class MotionAlarmViewModel : INotifyPropertyChanged
     {
-        public ICommand EnterMotionDetectMode { get; set; }
         public ICommand PinForCompare_Completed { get; set; }
         public ICommand PinForExit_Completed { get; set; }
 
         private MotionAlarm motionAlarm;
+
         public MotionAlarmViewModel()
         {
-            motionAlarm = new MotionAlarm();
-            EnterMotionDetectMode = new Command(ShowPinData);
+            motionAlarm = new MotionAlarm();          
             PinForCompare_Completed = new Command(PinForCompare_Completed_Command);
             PinForExit_Completed = new Command(PinForExit_Completed_Command);
         }
 
         public bool IsPlaying
         {
-            get { return motionAlarm.isPlaying; }
+            get { return motionAlarm.IsPlaying; }
             set
             {
-                if (motionAlarm.isPlaying != value)
+                if (motionAlarm.IsPlaying != value)
                 {
-                    motionAlarm.isPlaying = value;
+                    motionAlarm.IsPlaying = value;
                     OnPropertyChanged("isPlaying");
                 }
             }
@@ -62,7 +59,7 @@ namespace App1.ViewModels
                 if (_pinForExit != value)
                 {
                     _pinForExit = value;
-                    OnPropertyChanged("PinForExit");                    
+                    OnPropertyChanged("PinForExit");
                 }
             }
             get
@@ -121,7 +118,7 @@ namespace App1.ViewModels
         }
 
         private bool _stackForExitIsVisible;
-        public bool  StackForExitIsVisible
+        public bool StackForExitIsVisible
         {
             get
             {
@@ -135,7 +132,7 @@ namespace App1.ViewModels
         }
 
         private bool _labelShowNoticeIsVisible;
-        public bool  LabelShowNoticeIsVisible
+        public bool LabelShowNoticeIsVisible
         {
             get
             {
@@ -153,7 +150,6 @@ namespace App1.ViewModels
             try
             {
                 LabelShowNoticeIsVisible = true;
-             
                 Accelerometer.Start(SensorSpeed.UI);
                 Accelerometer.ReadingChanged += Accelerometer_ReadingChanged;
             }
@@ -170,46 +166,34 @@ namespace App1.ViewModels
             {
                 var data = e.Reading;
                 LabelSatus = "X:" + data.Acceleration.X + " Y:" + data.Acceleration.Y + " Z:" + data.Acceleration.Z;
-                if (motionAlarm.InitialAcceleration == "")
+                if (InitialAcceleration == "")
                 {
-                    motionAlarm.InitialAcceleration = LabelSatus;
+                    InitialAcceleration = LabelSatus;
+                    LabelShowNoticeIsVisible= true;
                     Thread.Sleep(2000);
+                    StackForExitIsVisible = true;
+                    LabelShowNoticeIsVisible = false;
                 }
             });
-            if (motionAlarm.InitialAcceleration != "")
+            if (InitialAcceleration != "")
             {
-                if (motionAlarm.InitialAcceleration != LabelSatus && !motionAlarm.isPlaying)
+                if (InitialAcceleration != LabelSatus && !IsPlaying)
                 {
                     DependencyService.Get<IAudio>().PlayAudioFile("alarm.wav");
-                    motionAlarm.isPlaying = true;
+                    IsPlaying = true;
                 }
             }
         }
 
-
-        private void ShowPinData()
-        {
-            try
-            {
-                if (Accelerometer.IsMonitoring)
-                {
-                    StackForExitIsVisible = true;
-                    StackForEnterIsVisible = false;
-                }
-                else
-                {
-                    StackForExitIsVisible = false;
-                    StackForEnterIsVisible = true;
-                }
-            }
-            catch { }
-        }
 
         private void PinForCompare_Completed_Command()
         {
-            InitializeAccelerometer();
-            StackForEnterIsVisible = false;
-            StackForExitIsVisible  = true;
+            if (PinForCompare != "")
+            {
+                InitializeAccelerometer();
+                StackForEnterIsVisible = false;
+            }
+                
         }
 
         private void PinForExit_Completed_Command()
@@ -219,14 +203,38 @@ namespace App1.ViewModels
                 if (Accelerometer.IsMonitoring)
                 {
                     Accelerometer.Stop();
-                    if (motionAlarm.isPlaying)
+                    if (IsPlaying)
                     {
                         DependencyService.Get<IAudio>().StopAudioFile("alarm.wav");
-                        motionAlarm.isPlaying = false;
-                        motionAlarm.InitialAcceleration = "";
-                        PinForCompare  = "";
-                        PinForExit  = "";
+                        IsPlaying = false;
+                        InitialAcceleration = "";
+                        PinForCompare = "";
+                        PinForExit = "";
+                        StackForEnterIsVisible = true;
+                        StackForExitIsVisible = false;                       
+                        LabelShowNoticeIsVisible = false;
+                        Accelerometer.ReadingChanged -= Accelerometer_ReadingChanged;
                     }
+                }
+            }
+            else
+            {
+                try
+                {
+                    // Use default vibration length
+                    Vibration.Vibrate();
+
+                    // Or use specified time
+                    var duration = TimeSpan.FromSeconds(1);
+                    Vibration.Vibrate(duration);
+                }
+                catch (FeatureNotSupportedException ex)
+                {
+                    // Feature not supported on device
+                }
+                catch (Exception ex)
+                {
+                    // Other error has occurred.
                 }
             }
         }
