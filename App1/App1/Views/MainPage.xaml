@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="App1.MainPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:App1">
+
+
+    <StackLayout Padding="20" HorizontalOptions="CenterAndExpand">
+        <Button
+            x:Name="ToggleAccelerometr"
+            Command="{Binding EnterMotionDetectMode}"
+            HorizontalOptions="CenterAndExpand"
+            Text=" motion alarm ON" />
+        <StackLayout x:Name="StackForEnter" IsVisible="{Binding StackForEnterIsVisible}">
+            <Label Text="Enter your secure PIN" />
+            <!--<Entry
+                x:Name="PinForCompare"
+                Completed="Entry_PinForCompare_Completed"
+                Keyboard="Numeric"
+                Text="{Binding PinForCompare}" />-->
+
+            <Entry Keyboard="Numeric" Text="{Binding PinForCompare, Mode=TwoWay}" />
+            <Button
+                Command="{Binding PinForCompare_Completed}"
+                HorizontalOptions="CenterAndExpand"
+                Text="ok" />
+        </StackLayout>
+        <StackLayout x:Name="StackForExit" IsVisible="{Binding StackForExitIsVisible}">
+            <Label
+                x:Name="labelShowNotice"
+                IsVisible="{Binding LabelShowNoticeIsVisible}"
+                Text="motion alarm will be on in 2 seconds"
+                TextColor="Red" />
+            <Label x:Name="labelSatus" Text="{Binding LabelSatus}" />
+            <Label Text="Enter your PIN to off motion alarm" />
+            <!--<Entry
+                x:Name="PinForExit"
+                Completed="Entry_PinForExit_Completed"
+                Keyboard="Numeric"
+                Text="{Binding PinForExit}" />-->
+            <Entry Keyboard="Numeric" Text="{Binding PinForExit, Mode=TwoWay}" />
+            <Button
+                Command="{Binding PinForExit_Completed}"
+                HorizontalOptions="CenterAndExpand"
+                Text="ok" />
+        </StackLayout>
+    </StackLayout>
+
+</ContentPage>
