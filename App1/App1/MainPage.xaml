@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="App1.MainPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:App1">
+
+    <StackLayout Padding="20" HorizontalOptions="CenterAndExpand">
+        <!--  Place new controls here  -->
+
+        <Label Text="on/off motion alarm" />
+        <Switch
+            x:Name="ToggleAccelerometr"
+            HorizontalOptions="CenterAndExpand"
+            Toggled="ToggleAccelerometr_Toggled" />
+        <StackLayout x:Name="StackForEnter" IsVisible="False">
+            <Label Text="Enter your secure PIN" />
+            <Entry
+                x:Name="PinForCompare"
+                Completed="Entry_PinForCompare_Completed"
+                Keyboard="Numeric" />
+        </StackLayout>
+        <StackLayout x:Name="StackForExit" IsVisible="False">
+            <Label
+                x:Name="labelShowNotice"
+                IsVisible="False"
+                Text="motion alarm will be on in 2 cesonds"
+                TextColor="Red" />
+            <Label x:Name="labelSatus" Text="" />
+            <Label Text="Enter your PIN to off motion alarm" />
+            <Entry
+                x:Name="PinForExit"
+                Completed="Entry_PinForExit_Completed"
+                Keyboard="Numeric" />
+        </StackLayout>
+    </StackLayout>
+
+</ContentPage>
