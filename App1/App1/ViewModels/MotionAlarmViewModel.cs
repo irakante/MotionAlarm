@@ -185,7 +185,6 @@ namespace App1.ViewModels
             }
         }
 
-
         private void PinForCompare_Completed_Command()
         {
             if (PinForCompare != "")
